@@ -1,0 +1,12 @@
+{
+  "$id": "http://example.com/schemas/child.schema.json",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "column1": {
+      "type": "number"
+    }
+  },
+  "required": ["id"]
+}
