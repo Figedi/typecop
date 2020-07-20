@@ -17,6 +17,7 @@ RUN echo "//registry.npmjs.org/:_authToken=${NPM_REGISTRY_TOKEN}" > ~/.npmrc; \
   rm -rf ~/.npm;
 
 COPY src src
+COPY resources resources
 COPY .prettierrc tsconfig.json .eslintrc.js ./
 RUN npm run build
 
