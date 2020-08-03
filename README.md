@@ -17,14 +17,17 @@ Example for using Schema-classes w/ SchemaRepository
 ```typescript 
 import { SchemaRepository } from "@figedi/typecop";
 
+// see resources root.schema.json for definition
+type RootExampleType = { 
+  id: string;
+  column1: ChildExampleType;
+  column2: number;
+};
+
 const SCHEMA_PATH = join(__dirname, "./resources");
 const schemaRepository = SchemaRepository.create(SCHEMA_PATH);
 await schemaRepository.preflight(); // loads all schemas, can be run at startup-phase
-const RootSchema = new Schema<RootExampleType, Wrapped<RootExampleType>>(
-  schemaRepository,
-  "root",
-  exampleSchemaWrapper,
-);
+const RootSchema = new Schema<RootExampleType>(schemaRepository, "root");
 RootSchema.is({ some: "object" }) // true/false, typeguard
 RootSchema.validate({ some: "object" }) // throws in case of errors
 ```
@@ -33,6 +36,7 @@ Example for base-validator usage
 ```typescript 
 import { createValidator } from "@figedi/typecop";
 const validator = createValidator();
+// loads the json-schema, de-references all contained $ref's
 const compiledSchema = await validator.compile(join(SCHEMA_PATH, "root.schema.json"));
 validator.validate(compiledSchema, { some: "object" });
 ```
