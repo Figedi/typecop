@@ -19,7 +19,7 @@ describe("createValidator", () => {
 
     it("dereferences schemas & validates a json-schema w/ $ref", async () => {
         const validator = createValidator();
-        const compiledSchema = await validator.compile(ROOT_SCHEMA, { schemaDirs: [SCHEMA_PATH] });
+        const compiledSchema = await validator.compile(ROOT_SCHEMA, [SCHEMA_PATH]);
 
         const isValid = validator.validate(compiledSchema, rootFixture);
         expect(isValid).to.eq(true);

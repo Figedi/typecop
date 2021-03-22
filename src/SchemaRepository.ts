@@ -1,40 +1,48 @@
 import { basename, join } from "path";
 import glob from "glob";
+import { uniq } from "lodash";
 
 import { SchemaSymbolNotFoundError } from "./errors";
 import { JSONSchema } from "./types";
 import { compileSchema } from "./utils";
 
+type JsonSchemaPaths = Record<string, { schema: JSONSchema; path: string }>;
 type JsonSchemaCollection = Record<string, JSONSchema>;
 
 export class SchemaRepository {
     private schemas: JsonSchemaCollection = {};
-    private constructor(private schemaBasePaths: string[], private rawSchemas: JsonSchemaCollection) {}
+    private constructor(private rawSchemas: JsonSchemaPaths) {}
 
-    private static getSchemasFromPath(schemaBasePath: string): JsonSchemaCollection {
+    private static getSchemasFromPath(schemaBasePath: string): JsonSchemaPaths {
         const schemaPaths = glob.sync(join(schemaBasePath, "**/*.json"));
         return schemaPaths.reduce((acc, path) => {
             const [sanitizedName] = basename(path).split(".");
             // eslint-disable-next-line import/no-dynamic-require, global-require
-            return { ...acc, [sanitizedName]: require(path) };
+            return { ...acc, [sanitizedName]: { schema: require(path), path } };
         }, {});
     }
 
     public static create(...schemaBasePaths: string[]): SchemaRepository {
         const schemas = schemaBasePaths.reduce(
             (acc, schemaBasePath) => ({ ...acc, ...SchemaRepository.getSchemasFromPath(schemaBasePath) }),
-            {},
+            {} as JsonSchemaPaths,
         );
 
-        return new SchemaRepository(schemaBasePaths, schemas);
+        return new SchemaRepository(schemas);
     }
 
     public async preflight(): Promise<void> {
+        const schemaDirs = uniq(
+            Object.values(this.rawSchemas).map(({ path }) => {
+                return path.replace(basename(path), "");
+            }),
+        );
+
         this.schemas = (
             await Promise.all(
-                Object.entries(this.rawSchemas).map(async ([name, schema]) => [
+                Object.entries(this.rawSchemas).map(async ([name, { schema }]) => [
                     name,
-                    await compileSchema(schema as JSONSchema, { schemaDirs: this.schemaBasePaths }),
+                    await compileSchema(schema as JSONSchema, schemaDirs),
                 ]),
             )
         ).reduce<JsonSchemaCollection>(

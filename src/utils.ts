@@ -36,13 +36,13 @@ export const combineJsonSchemas = <Input, Output>(...schemas: JSONSchema<Input>[
 
 export const compileSchema = async <Type>(
     rootSchemaPath: string | JSONSchema<Type>,
-    opts: { schemaDirs?: string[] } = {},
+    schemaDirs?: string[],
 ): Promise<JSONSchema<Type>> => {
     return ((await refParser.dereference(
         (rootSchemaPath as unknown) as string, // incompatible typing w/ our custom JSONSchema-type
-        opts.schemaDirs
+        schemaDirs
             ? {
-                  resolve: opts.schemaDirs.reduce(
+                  resolve: schemaDirs.reduce(
                       (acc, schemaDir, i) => ({ ...acc, [`local_${i}`]: createLocalFileResolver(schemaDir) }),
                       {},
                   ),
