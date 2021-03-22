@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.1](https://github.com/figedi/typecop/compare/v1.2.0...v1.2.1) (2021-03-22)
+
+
+### Bug Fixes
+
+* fixes local file resolution for nested schema dirs ([7452508](https://github.com/figedi/typecop/commit/745250834a391d45d0aa355b08d92b0d1da18f65))
+
 ## [1.2.0](https://github.com/figedi/typecop/compare/v1.1.0...v1.2.0) (2021-03-22)
 
 
