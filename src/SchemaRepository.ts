@@ -1,5 +1,6 @@
-import { readdirSync } from "fs";
-import { join } from "path";
+import { basename, join } from "path";
+import glob from "glob";
+
 import { SchemaSymbolNotFoundError } from "./errors";
 import { JSONSchema } from "./types";
 import { compileSchema } from "./utils";
@@ -11,15 +12,12 @@ export class SchemaRepository {
     private constructor(private schemaBasePaths: string[], private rawSchemas: JsonSchemaCollection) {}
 
     private static getSchemasFromPath(schemaBasePath: string): JsonSchemaCollection {
-        const dirs = readdirSync(schemaBasePath, { withFileTypes: true });
-        return dirs.reduce<JsonSchemaCollection>((acc, dir) => {
-            if (dir.isDirectory()) {
-                throw new Error(`Did not expect another directory in schema-directory. The contents should be flat`);
-            }
-            const [sanitizedName] = dir.name.split(".");
+        const schemaPaths = glob.sync(join(schemaBasePath, "**/*.json"));
+        return schemaPaths.reduce((acc, path) => {
+            const [sanitizedName] = basename(path).split(".");
             // eslint-disable-next-line import/no-dynamic-require, global-require
-            return { ...acc, [sanitizedName]: require(join(schemaBasePath, dir.name)) };
-        }, {} as JsonSchemaCollection);
+            return { ...acc, [sanitizedName]: require(path) };
+        }, {});
     }
 
     public static create(...schemaBasePaths: string[]): SchemaRepository {
