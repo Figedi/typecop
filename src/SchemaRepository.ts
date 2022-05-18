@@ -1,22 +1,23 @@
-import { basename, join } from "path";
-import glob from "glob";
-import { uniq } from "lodash";
+import { basename, join } from 'path';
+import glob from 'glob';
+import { uniq } from 'lodash';
 
-import { SchemaSymbolNotFoundError } from "./errors";
-import { JSONSchema } from "./types";
-import { compileSchema } from "./utils";
+import { SchemaSymbolNotFoundError } from './errors';
+import { JSONSchema } from './types';
+import { compileSchema } from './utils';
 
 type JsonSchemaPaths = Record<string, { schema: JSONSchema; path: string }>;
 type JsonSchemaCollection = Record<string, JSONSchema>;
 
 export class SchemaRepository {
     private schemas: JsonSchemaCollection = {};
+
     private constructor(private rawSchemas: JsonSchemaPaths) {}
 
     private static getSchemasFromPath(schemaBasePath: string): JsonSchemaPaths {
-        const schemaPaths = glob.sync(join(schemaBasePath, "**/*.json"));
+        const schemaPaths = glob.sync(join(schemaBasePath, '**/*.json'));
         return schemaPaths.reduce((acc, path) => {
-            const [sanitizedName] = basename(path).split(".");
+            const [sanitizedName] = basename(path).split('.');
             // eslint-disable-next-line import/no-dynamic-require, global-require
             return { ...acc, [sanitizedName]: { schema: require(path), path } };
         }, {});
@@ -33,9 +34,7 @@ export class SchemaRepository {
 
     public async preflight(): Promise<void> {
         const schemaDirs = uniq(
-            Object.values(this.rawSchemas).map(({ path }) => {
-                return path.replace(basename(path), "");
-            }),
+            Object.values(this.rawSchemas).map(({ path }) => path.replace(basename(path), '')),
         );
 
         this.schemas = (

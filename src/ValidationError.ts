@@ -1,7 +1,6 @@
-import VError from "verror";
-import { ErrorObject } from "ajv";
-import { reduce, isPlainObject, isArray, uniq, get } from "lodash";
-import { Constructor } from "./types";
+import { ErrorObject } from 'ajv';
+import { reduce, isPlainObject, isArray, uniq, get } from 'lodash';
+import { Constructor } from './types';
 
 export interface FormattedAjvError {
     value: unknown;
@@ -14,15 +13,15 @@ export interface FormattedAjvError {
  * a given object does not match
  * the expected schema
  */
-export class SchemaValidationError<EntityType = unknown> extends VError {
+export class SchemaValidationError<EntityType = unknown> extends Error {
     // generic error for the validated entity, that is e.g. the case for compound schemas w/ anyOf
-    private static ENTITY_ERROR = "validated-entity";
+    private static ENTITY_ERROR = 'validated-entity';
 
     public static KEYWORDS = {
-        ADDITIONAL_PROPERTIES: "additionalProperties",
-        ANY_OF: "anyOf",
-        REQUIRED: "required",
-        FORMAT: "format",
+        ADDITIONAL_PROPERTIES: 'additionalProperties',
+        ANY_OF: 'anyOf',
+        REQUIRED: 'required',
+        FORMAT: 'format',
     };
 
     constructor(schema: string, message: string, private entity: EntityType, private errors: ErrorObject[]) {
@@ -60,7 +59,7 @@ export class SchemaValidationError<EntityType = unknown> extends VError {
                 let dataPath;
                 if (error.dataPath.length) {
                     // ajv outputs the dataPath with a leading '.' for objects, lodash does not expect this
-                    dataPath = error.dataPath.startsWith(".") ? error.dataPath.substring(1) : error.dataPath;
+                    dataPath = error.dataPath.startsWith('.') ? error.dataPath.substring(1) : error.dataPath;
                 }
                 return {
                     message: error.message,
@@ -87,7 +86,7 @@ export class SchemaValidationError<EntityType = unknown> extends VError {
         const formattedErrors = reduce(
             this.getSchemaErrorsWithProps(),
             (acc, { prop, value, errors }: FormattedAjvError) => {
-                const errorsFormatted = errors.join(",");
+                const errorsFormatted = errors.join(',');
                 if (isPlainObject(value) || isArray(value)) {
                     return [...acc, `- ${prop} failed with "${errorsFormatted}"`];
                 }
@@ -97,12 +96,12 @@ export class SchemaValidationError<EntityType = unknown> extends VError {
                 return [...acc, `- ${prop} (${value}) failed with "${errorsFormatted}"`];
             },
             [] as string[],
-        ).join("\n");
+        ).join('\n');
         return `Schema validation failed with message: \n${formattedErrors}`;
     }
 
     private guessEntityName(): string {
-        const constructorName = ((this.entity as unknown) as Constructor).constructor.name;
-        return constructorName === "Object" ? SchemaValidationError.ENTITY_ERROR : constructorName;
+        const constructorName = (this.entity as unknown as Constructor).constructor.name;
+        return constructorName === 'Object' ? SchemaValidationError.ENTITY_ERROR : constructorName;
     }
 }

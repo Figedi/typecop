@@ -10,16 +10,16 @@ export type ChildExampleType = {
 };
 
 export const rootFixture: RootExampleType = {
-    id: "abc123",
+    id: 'abc123',
     column1: {
-        id: "bcd456",
+        id: 'bcd456',
         column1: 1337,
     },
     column2: 42,
 };
 
 export const invalidRootFixture = {
-    id: "abc123",
+    id: 'abc123',
     column1: {
         id: 400,
     },

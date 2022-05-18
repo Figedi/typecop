@@ -1,3 +1,1 @@
-import VError from "verror";
-
-export class SchemaSymbolNotFoundError extends VError {}
+export class SchemaSymbolNotFoundError extends Error {}

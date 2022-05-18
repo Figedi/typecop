@@ -1,6 +1,6 @@
-import { createValidator } from "./createValidator";
-import { JSONSchema } from "./types";
-import { SchemaRepository } from "./SchemaRepository";
+import { createValidator } from './createValidator';
+import { JSONSchema } from './types';
+import { SchemaRepository } from './SchemaRepository';
 
 export class Schema<Type, ProjectedType = Type> {
     constructor(

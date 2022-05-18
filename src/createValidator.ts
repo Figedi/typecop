@@ -1,8 +1,8 @@
-import Ajv from "ajv";
+import Ajv from 'ajv';
 
-import { SchemaValidationError } from "./ValidationError";
-import { JSONSchema, Constructor } from "./types";
-import { compileSchema } from "./utils";
+import { SchemaValidationError } from './ValidationError';
+import { JSONSchema, Constructor } from './types';
+import { compileSchema } from './utils';
 
 export interface SchemaValidator {
     compile: typeof compileSchema;
@@ -17,7 +17,7 @@ export const createValidator = (): SchemaValidator => {
         if (rootValidator.errors) {
             const { errors } = rootValidator;
             throw new SchemaValidationError(
-                String(schema.$id || "schema without id"),
+                String(schema.$id || 'schema without id'),
                 rootValidator.errorsText(errors),
                 data as Constructor,
                 errors,

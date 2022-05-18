@@ -1,4 +1,4 @@
-import { JSONSchema7 } from "json-schema";
+import { JSONSchema7 } from 'json-schema';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export interface Constructor<T = any> extends Function {
