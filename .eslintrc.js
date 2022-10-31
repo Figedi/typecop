@@ -14,8 +14,6 @@ module.exports = {
         project: "./tsconfig.json",
     },
     rules: {
-        "quotes": "off",
-        "@typescript-eslint/quotes": ["error"],
         "import/prefer-default-export": "off"
-    },
+    }
 };

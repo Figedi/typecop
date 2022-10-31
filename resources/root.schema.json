@@ -1,5 +1,6 @@
 {
   "$id": "http://example.com/schemas/root.schema.json",
+  "type": "object",
   "properties": {
     "id": {
       "type": "string"
