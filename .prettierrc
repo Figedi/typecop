@@ -3,5 +3,6 @@
     "tabWidth": 4,
     "trailingComma": "all",
     "arrowParens": "avoid",
-    "parser": "typescript"
+    "parser": "typescript",
+    "singleQuote": false
 }

@@ -1,6 +1,6 @@
-import { createValidator } from './createValidator';
-import { JSONSchema } from './types';
-import { SchemaRepository } from './SchemaRepository';
+import { createValidator } from "./createValidator";
+import { JSONSchema } from "./types";
+import { SchemaRepository } from "./SchemaRepository";
 
 export class Schema<Type, ProjectedType = Type> {
     constructor(
@@ -15,7 +15,7 @@ export class Schema<Type, ProjectedType = Type> {
         if (this.projection) {
             return this.projection(schema);
         }
-        return schema as ProjectedType;
+        return schema as JSONSchema<ProjectedType>;
     }
 
     is(obj: unknown): obj is ProjectedType {
