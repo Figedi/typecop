@@ -1,5 +1,6 @@
 import { basename, join } from "path";
-import { globSync } from "glob";
+import { glob } from "glob";
+import { readFile } from "node:fs/promises";
 import { uniq } from "lodash";
 
 import { SchemaSymbolNotFoundError } from "./errors";
@@ -14,22 +15,31 @@ export class SchemaRepository {
 
     private constructor(private rawSchemas: JsonSchemaPaths) {}
 
-    private static getSchemasFromPath(schemaBasePath: string): JsonSchemaPaths {
-        const schemaPaths = globSync(join(schemaBasePath, "**/*.json"));
-        return schemaPaths.reduce((acc, path) => {
-            const [sanitizedName] = basename(path).split(".");
-            // eslint-disable-next-line import/no-dynamic-require, global-require
-            return { ...acc, [sanitizedName]: { schema: require(path), path } };
-        }, {});
+    private static async readJson<TResult extends Record<string, any>>(path: string): Promise<TResult> {
+        const content = await readFile(path, "utf-8");
+        return JSON.parse(content);
     }
 
-    public static create(...schemaBasePaths: string[]): SchemaRepository {
-        const schemas = schemaBasePaths.reduce(
-            (acc, schemaBasePath) => ({ ...acc, ...SchemaRepository.getSchemasFromPath(schemaBasePath) }),
-            {} as JsonSchemaPaths,
-        );
+    private static async getSchemasFromPath(schemaBasePath: string): Promise<JsonSchemaPaths> {
+        const schemaPaths = await glob(join(schemaBasePath, "**/*.json"));
 
-        return new SchemaRepository(schemas);
+        const schemas = await Promise.all(
+            schemaPaths.map(p => {
+                const [sanitizedName] = basename(p).split(".");
+                return [sanitizedName, { schema: SchemaRepository.readJson(p), path: p }];
+            }),
+        );
+        return Object.fromEntries(schemas);
+    }
+
+    public static async create(...schemaBasePaths: string[]): Promise<SchemaRepository> {
+        const flattenedSchemas = (
+            await Promise.all(
+                schemaBasePaths.map(schemaBasePath => SchemaRepository.getSchemasFromPath(schemaBasePath)),
+            )
+        ).reduce((acc, schemas) => ({ ...acc, ...schemas }), {});
+
+        return new SchemaRepository(flattenedSchemas);
     }
 
     public async preflight(): Promise<void> {

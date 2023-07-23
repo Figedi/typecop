@@ -1,6 +1,6 @@
 import { JSONSchema7 } from 'json-schema';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/ban-types
 export interface Constructor<T = any> extends Function {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     new (...args: any[]): T;

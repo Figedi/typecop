@@ -19,7 +19,10 @@ const exampleSchemaWrapper = <T>(schema: JSONSchema<T>): JSONSchema<Wrapped<T>> 
 
 describe("SchemaRepository", () => {
     const SCHEMA_PATH = join(__dirname, "../resources");
-    const schemaRepository = SchemaRepository.create(SCHEMA_PATH);
+    let schemaRepository: SchemaRepository
+    before(async () => {
+        schemaRepository = await SchemaRepository.create(SCHEMA_PATH);
+    })
 
     it("loads & compiles schemas from a path", async () => {
         await schemaRepository.preflight();
