@@ -5,14 +5,15 @@
   "contributors": [],
   "homepage": "https://github.com/figedi/typecop",
   "scripts": {
-    "specs": "_mocha --require ts-node/register 'src/**/*.spec.ts'",
-    "lint": "eslint --cache --ext .js,.jsx,.ts,.tsx --format=pretty ./src",
+    "specs": "TZ=utc NODE_ENV=test vitest --run",
+    "lint": "biome check ./src biome.json",
+    "lint:fix": "biome check --write ./src biome.json",
     "build": "tsc"
   },
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
   "engines": {
-    "node": ">=18.16.0"
+    "node": ">=22.11.0"
   },
   "husky": {
     "hooks": {
@@ -27,38 +28,22 @@
   "keywords": [],
   "license": "SEE LICENSE IN LICENSE.md",
   "devDependencies": {
-    "@types/chai": "^4.3.5",
-    "@types/koa": "^2.13.6",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^20.4.4",
-    "@types/sinon": "^10.0.15",
-    "@typescript-eslint/eslint-plugin": "^6.1.0",
-    "@typescript-eslint/parser": "^6.1.0",
-    "chai": "^4.3.7",
-    "commitlint": "^17.6.7",
-    "eslint": "^8.45.0",
-    "eslint-config-airbnb-typescript": "^17.1.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-formatter-pretty": "^5.0.0",
-    "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-promise": "^6.1.1",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.2.3",
-    "mocha": "^10.2.0",
-    "prettier": "^3.0.0",
-    "sinon": "^15.2.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "^22.10.10",
+    "vitest": "^3.0.4",
+    "commitlint": "^19.6.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.2",
+    "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^10.1.0",
+    "@apidevtools/json-schema-ref-parser": "^11.7.3",
     "@types/glob": "^8.1.0",
-    "@types/json-schema": "^7.0.12",
-    "@types/lodash": "^4.14.195",
-    "ajv": "^8.12.0",
-    "glob": "^10.3.3",
+    "@types/json-schema": "^7.0.15",
+    "@types/lodash": "^4.17.14",
+    "ajv": "^8.17.1",
+    "glob": "^11.0.1",
     "json-schema": "^0.4.0",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.21"
   }
 }

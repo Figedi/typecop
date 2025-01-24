@@ -1,7 +1,7 @@
 import Ajv from 'ajv';
 
 import { SchemaValidationError } from './ValidationError';
-import { JSONSchema, Constructor } from './types';
+import { Constructor, JSONSchema } from './types';
 import { compileSchema } from './utils';
 
 export interface SchemaValidator {
@@ -16,12 +16,7 @@ export const createValidator = (): SchemaValidator => {
         const isValid = rootValidator.validate(schema, data);
         if (rootValidator.errors) {
             const { errors } = rootValidator;
-            throw new SchemaValidationError(
-                String(schema.$id || 'schema without id'),
-                rootValidator.errorsText(errors),
-                data as Constructor,
-                errors,
-            );
+            throw new SchemaValidationError(String(schema.$id || 'schema without id'), rootValidator.errorsText(errors), data as Constructor, errors);
         }
         return isValid as boolean;
     };

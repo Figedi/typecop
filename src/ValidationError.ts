@@ -1,6 +1,6 @@
-import { ErrorObject } from "ajv";
-import { reduce, isPlainObject, isArray, uniq, get } from "lodash";
-import { Constructor } from "./types";
+import { ErrorObject } from 'ajv';
+import { get, isArray, isPlainObject, reduce, uniq } from 'lodash';
+import { Constructor } from './types';
 
 export interface FormattedAjvError {
     value: unknown;
@@ -15,16 +15,21 @@ export interface FormattedAjvError {
  */
 export class SchemaValidationError<EntityType = unknown> extends Error {
     // generic error for the validated entity, that is e.g. the case for compound schemas w/ anyOf
-    private static ENTITY_ERROR = "validated-entity";
+    private static ENTITY_ERROR = 'validated-entity';
 
     public static KEYWORDS = {
-        ADDITIONAL_PROPERTIES: "additionalProperties",
-        ANY_OF: "anyOf",
-        REQUIRED: "required",
-        FORMAT: "format",
+        ADDITIONAL_PROPERTIES: 'additionalProperties',
+        ANY_OF: 'anyOf',
+        REQUIRED: 'required',
+        FORMAT: 'format',
     };
 
-    constructor(schema: string, message: string, private entity: EntityType, private errors: ErrorObject[]) {
+    constructor(
+        schema: string,
+        message: string,
+        private entity: EntityType,
+        private errors: ErrorObject[],
+    ) {
         super(`Validation error ("${message}") in "${schema}"`);
     }
 
@@ -59,37 +64,37 @@ export class SchemaValidationError<EntityType = unknown> extends Error {
                 let instancePath;
                 if (error.instancePath.length) {
                     // ajv outputs the instancePath as a full path (e.g. /path/to/some/prop), lodash does not expect this
-                    instancePath = error.instancePath.startsWith("/")
-                        ? error.instancePath.replace(/\//g, ".").slice(1)
-                        : error.instancePath;
+                    instancePath = error.instancePath.startsWith('/') ? error.instancePath.replace(/\//g, '.').slice(1) : error.instancePath;
                 }
                 return {
                     message: error.message,
-                    value:
-                        instancePath && instancePath.length ? get(this.entity, instancePath) : this.guessEntityName(),
+                    value: instancePath && instancePath.length ? get(this.entity, instancePath) : this.guessEntityName(),
                     prop: instancePath,
                 };
             })
-            .reduce((acc, { message, prop, value }) => {
-                if (!prop) {
-                    return acc;
-                }
-                return {
-                    ...acc,
-                    [prop]: {
-                        prop,
-                        value,
-                        errors: uniq([...((acc[prop] && acc[prop].errors) || []), message]) as string[],
-                    },
-                };
-            }, {} as Record<string, FormattedAjvError>);
+            .reduce(
+                (acc, { message, prop, value }) => {
+                    if (!prop) {
+                        return acc;
+                    }
+                    return {
+                        ...acc,
+                        [prop]: {
+                            prop,
+                            value,
+                            errors: uniq([...((acc[prop] && acc[prop].errors) || []), message]) as string[],
+                        },
+                    };
+                },
+                {} as Record<string, FormattedAjvError>,
+            );
     }
 
     public toString(): string {
         const formattedErrors = reduce(
             this.getSchemaErrorsWithProps(),
             (acc, { prop, value, errors }: FormattedAjvError) => {
-                const errorsFormatted = errors.join(",");
+                const errorsFormatted = errors.join(',');
                 if (isPlainObject(value) || isArray(value)) {
                     return [...acc, `- ${prop} failed with "${errorsFormatted}"`];
                 }
@@ -99,12 +104,12 @@ export class SchemaValidationError<EntityType = unknown> extends Error {
                 return [...acc, `- ${prop} (${value}) failed with "${errorsFormatted}"`];
             },
             [] as string[],
-        ).join("\n");
+        ).join('\n');
         return `Schema validation failed with message: \n${formattedErrors}`;
     }
 
     private guessEntityName(): string {
         const constructorName = (this.entity as unknown as Constructor).constructor.name;
-        return constructorName === "Object" ? SchemaValidationError.ENTITY_ERROR : constructorName;
+        return constructorName === 'Object' ? SchemaValidationError.ENTITY_ERROR : constructorName;
     }
 }
